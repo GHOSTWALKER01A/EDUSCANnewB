@@ -16,9 +16,15 @@ export interface IUser extends Document {
   join_date: Date
   verified?: boolean
   refreshToken?: string | null
-
+  
+  points?: number
+  blocked:boolean
   macAddress?: string
   macHash?: string
+  deviceFingerprint?: string
+  salt?: string
+  status?: string
+  attendancePercentage?: number
 
   isPasswordCorrect(password: string): Promise<boolean>
   generateAccessToken(): string

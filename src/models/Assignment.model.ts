@@ -2,7 +2,7 @@ import mongoose, {Schema, Document } from "mongoose";
 import { IAssignment } from "../types/Assignment.types.js";
 
 const AssignmentSchema: Schema<IAssignment> = new Schema({
-  studentId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true

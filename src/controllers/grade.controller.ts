@@ -27,3 +27,20 @@ export const getGradesBySemester = asyncHandler(async (req: Request, res: Respon
     throw new ApiError(500, 'Internal Server Error');
   }
 });
+
+export const getGradeSummary = asyncHandler(async (req: Request, res: Response) => {
+  // simple mock average grade until fuller logic is built
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { avg: 'A-' },
+      'Grade summary fetched'
+    )
+  );
+});
+
+export const getAllGrades = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req as any).user._id;
+  const grades = await GradeModel.find({ studentId: userId });
+  return res.status(200).json(new ApiResponse(200, grades || [], 'All Grades fetched'));
+});

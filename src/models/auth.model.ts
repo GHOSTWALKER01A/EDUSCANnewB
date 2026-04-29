@@ -56,6 +56,10 @@ const UserSchema: Schema<IUser> = new Schema({
      type: String,
      default: ''
      },
+  points: {
+     type: Number,
+     default: 0
+     },
   role: { 
     type: String,
     enum: ['student', 'teacher', 'admin'],
@@ -69,6 +73,11 @@ const UserSchema: Schema<IUser> = new Schema({
     type: Boolean,
     default: false 
     },
+  blocked:{
+    type: Boolean,
+    default: false,
+    index: true,
+  },
   refreshToken: {
      type: String,
      default: '' 
@@ -81,6 +90,23 @@ const UserSchema: Schema<IUser> = new Schema({
      type: String,
      default: '' 
     },
+  deviceFingerprint: {
+     type: String,
+     default: ''
+    },
+  salt: {
+     type: String,
+     default: ''
+    },
+  status: {
+    type: String,
+    enum: ['Active', 'On Leave', 'Suspended'],
+    default: 'Active'
+  },
+  attendancePercentage: {
+    type: Number,
+    default: 0
+  }
 }, { timestamps: true })
 
 

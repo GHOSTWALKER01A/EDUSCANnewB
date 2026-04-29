@@ -18,13 +18,22 @@ const AttendanceSchema: Schema<IAttendance> = new Schema({
   },
   method: {
     type: String,
-    enum: ['auto', 'manual'],
-    default: 'manual'
+    enum: ['auto', 'manual', 'qr', 'Automated_WiFi', 'Golden_Key_QR', 'None'],
+    default: 'auto'
   },
   status: {
     type: String,
-    enum: ['present', 'absent'],
+    enum: ['present', 'absent', 'late', 'excused', 'incomplete'],
     default: 'absent'
+  },
+  minutesPresent: {
+    type: Number,
+    default: 0
+  },
+  verificationMethod: {
+    type: String,
+    enum: ['Automated_WiFi', 'Golden_Key_QR', 'None'],
+    default: 'None'
   },
   student_latitude: {
     type: Number
@@ -41,7 +50,11 @@ const AttendanceSchema: Schema<IAttendance> = new Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  isValid: {
+     type: Boolean,
+     default: true
+    }
 },{timestamps:true});
 
 const AttendanceModel = (mongoose.models.Attendance as mongoose.Model<IAttendance & Document>) ||

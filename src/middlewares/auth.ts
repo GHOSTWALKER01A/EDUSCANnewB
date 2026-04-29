@@ -16,6 +16,9 @@ export const verifyJWT = async (req: AuthRequest, res: Response, next: NextFunct
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as any
     const user = await UserModel.findById(decoded._id).select('-password -refreshToken')
     if (!user) throw new ApiError(401, 'Invalid token')
+    if (user.role === 'student' && user.blocked) {
+     throw new ApiError(403, 'Your account has been blocked by administration');
+        }
     req.user = user
     next()
   } catch (err: any) {

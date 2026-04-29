@@ -4,7 +4,7 @@ import { asyncHandler } from '../utils/asynchandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import UserModel  from '../models/auth.model.js';
-import { uploadOnCloudinary  } from '../services/Cloudinary.js'; // implement uploading to cloud optionally
+import { uploadOnCloudinary  } from '../services/Cloudinary.service.js'; // implement uploading to cloud optionally
 
 
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {

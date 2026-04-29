@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 export async function connectDB() : Promise<void> {
     try {
-        await mongoose.connect(process.env.MONGODB_URI!);
+        await mongoose.connect(process.env.MONGO_URI!);
         const connection = mongoose.connection
 
         connection.on('connected', ()=>{
@@ -17,7 +17,8 @@ export async function connectDB() : Promise<void> {
         
     } catch (error: any) {
      console.log("Something went wrong !!! ");
-       console.log(error)      
+       console.log(error);
+       throw error;
     }
 }
 

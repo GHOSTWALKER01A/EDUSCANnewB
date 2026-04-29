@@ -1,6 +1,16 @@
 import mongoose, {Schema, Document} from "mongoose";
 import {IClass} from "../types/Class.types.js";
+import { IQRSession } from "../types/Class.types.js";
 
+
+const QRSessionSchema = new Schema<IQRSession>({
+  sessionId: String,
+  startTime: Date,
+  endTime: Date,
+  isActive: { type: Boolean, default: false },
+  lastTokenGenerated: Date,
+  totpSecret: String,
+}, { _id: false });
 
 
 export const ClassSchema: Schema<IClass> = new Schema({
@@ -25,18 +35,46 @@ export const ClassSchema: Schema<IClass> = new Schema({
     teacher_longitude: {
         type: Number
     },
+    branch: {
+        type: String
+    },
     date: {
         type: Date,
          required: [true,"Date is required"]
         },
+    time: {
+         type: String, 
+         required: true 
+        },
+    room: String,
     status: {
         type: String,
          enum: ['cancelled', 'ongoing', 'completed'],
           default: 'ongoing'
         },
+    classStatus: {
+         type: String,
+          enum: ['scheduled', 'rescheduled', 'cancelled'],
+           default: 'scheduled' 
+        },
     totalStudents: {
         type: Number,
          default: 0
+        },
+    studentsPresent: {
+         type: Number,
+          default: 0
+        },
+    semester: {
+        type: String
+    },
+    isConfirmed: {
+        type: Boolean,
+        default: false
+    },
+    qrSession: { 
+        type: QRSessionSchema,
+         default: {} 
         }
 }, {
     timestamps: true

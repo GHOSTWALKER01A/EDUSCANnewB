@@ -6,7 +6,7 @@ import { ApiError } from '../utils/ApiError.js'
 import UserModel  from '../models/auth.model.js'
 import { setOTP, getOTP, delOTP } from '../services/Redis.js'
 import { sendVerificationEmail } from '../services/Resendemail.js'
-import { uploadOnCloudinary } from '../services/Cloudinary.js'
+import { uploadOnCloudinary } from '../services/Cloudinary.service.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -86,7 +86,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
 
 // LOGIN
 export const loginUser = asyncHandler(async (req:Request ,res:Response) => {
-  try {
+
     const { emailOrRegistrationNo, password } = req.body
   
     if (!emailOrRegistrationNo || !password) throw new ApiError(400, 'Missing credentials')
@@ -139,10 +139,7 @@ export const loginUser = asyncHandler(async (req:Request ,res:Response) => {
               'Login successful'
               )
           )
-        } catch (error: any) {
-            console.error('Error logging in:', error);
-            throw new ApiError(500, 'Failed to log in');
-        }
+       
     })
 
 // SEND OTP (public)
@@ -235,7 +232,7 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
   
     if (!email || !newPassword) throw new ApiError(400, 'Email and password required')
   
-    if (newPassword.length < 8) throw new ApiError(400, 'Password must be >= 8 chars')
+    if (newPassword.length < 6) throw new ApiError(400, 'Password must be >= 6 chars')
   
     const user = await UserModel.findOne({ email })
   

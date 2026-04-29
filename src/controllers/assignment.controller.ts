@@ -1,10 +1,10 @@
-// src/controllers/assignment.controller.ts
+
 import { Request, Response } from 'express';
 import { asyncHandler } from '../utils/asynchandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import AssignmentModel  from '../models/Assignment.model.js';
-import { uploadOnCloudinary } from '../services/Cloudinary.js';
+import { uploadOnCloudinary } from '../services/Cloudinary.service.js';
 import fs from 'fs/promises';
 
 
@@ -16,7 +16,7 @@ export const getAssignments = asyncHandler(async (req: Request, res: Response) =
  try {
      const userId = (req as any).user._id;
 
-     const assignments = await AssignmentModel.find({ studentId: userId })
+     const assignments = await AssignmentModel.find({ userId })
      .sort({ createdAt: -1 });
      return res.status(200).json(
         new ApiResponse(
@@ -44,6 +44,14 @@ export const createAssignment = asyncHandler(async (req: Request, res: Response)
   
     if (req.file) {
       const file = req.file; // if you use single file input middleware .single('file')
+      
+      // optionally set a small preview for images (dataURL) — be careful with big files
+      // READ BEFORE UPLOAD since uploadOnCloudinary unlinks the file
+      if (file.mimetype.startsWith('image/')) {
+        const buf = await fs.readFile(file.path);
+        filePreview = `data:${file.mimetype};base64,${buf.toString('base64')}`;
+      }
+
       const uploaded = await uploadOnCloudinary(file.path);
       
       if(uploaded){
@@ -51,15 +59,10 @@ export const createAssignment = asyncHandler(async (req: Request, res: Response)
       fileType = file.mimetype;
       fileName = file.originalname;
       }
-      // optionally set a small preview for images (dataURL) — be careful with big files
-      if (file.mimetype.startsWith('image/')) {
-        const buf = await fs.readFile(file.path);
-        filePreview = `data:${file.mimetype};base64,${buf.toString('base64')}`;
-      }
     }
   
     const assignment = await AssignmentModel.create({
-      studentId: userId,
+      userId,
       subject,
       description,
       fileUrl,
@@ -87,7 +90,7 @@ export const updateAssignment = asyncHandler(async (req: Request, res: Response)
     const { id } = req.params;
     const { subject, description } = req.body;
   
-    const assignment = await AssignmentModel.findOne({ _id: id, studentId: userId });
+    const assignment = await AssignmentModel.findOne({ _id: id, userId });
     if (!assignment) throw new ApiError(404, 'Assignment not found');
   
     // update fields
@@ -95,16 +98,17 @@ export const updateAssignment = asyncHandler(async (req: Request, res: Response)
     if (description) assignment.description = description;
   
     if (req.file) {
+      // build preview if image BEFORE uploading since upload deletes the local file
+      if (req.file.mimetype.startsWith('image/')) {
+        const buf = await fs.readFile(req.file.path);
+        assignment.filePreview = `data:${req.file.mimetype};base64,${buf.toString('base64')}`;
+      }
+
       const uploaded = await uploadOnCloudinary(req.file.path);
       if(uploaded){
       assignment.fileUrl = uploaded.url;
       assignment.fileType = req.file.mimetype;
       assignment.fileName = req.file.originalname;
-      }
-      // build preview if image
-      if (req.file.mimetype.startsWith('image/')) {
-        const buf = await fs.readFile(req.file.path);
-        assignment.filePreview = `data:${req.file.mimetype};base64,${buf.toString('base64')}`;
       }
     }
   
@@ -130,7 +134,7 @@ export const deleteAssignment = asyncHandler(async (req: Request, res: Response)
 
   const assignment = await AssignmentModel.findOneAndDelete({ 
     _id: id,
-     studentId: userId 
+     userId 
     });
 
   if (!assignment) throw new ApiError(404, 'Assignment not found');

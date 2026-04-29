@@ -7,6 +7,7 @@ import redisClient, { connectRedis } from './services/RedisClient.js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -17,6 +18,8 @@ config({
      './.env'
   )
 })
+
+
 
 connectDB()
 .then(async() => {

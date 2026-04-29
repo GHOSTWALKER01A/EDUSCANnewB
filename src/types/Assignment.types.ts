@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IAssignment extends Document {
-  studentId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   subject: string;
   description?: string;
   fileUrl?: string;        // hosted url
