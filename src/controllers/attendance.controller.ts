@@ -270,7 +270,7 @@ try {
         
         const activeClasses = await ClassModel.find({
             date: { $gte: start, $lt: end },
-            status: 'active',
+            status: 'ongoing',
             'qrSession.isActive': true,
             'qrSession.totpSecret': { $exists: true }
         });
@@ -314,7 +314,7 @@ try {
             student_latitude: latitude,
             student_longitude: longitude,
             token: totpToken,
-            verificationMethod: 'Manual_Entry'
+            verificationMethod: 'None'
         });
 
         matchedClass.totalStudents = (matchedClass.totalStudents || 0) + 1;
@@ -395,7 +395,7 @@ try {
         ));
 } catch (error:any) {
     console.log("error in markAttendanceViaQR",error)
-    throw new ApiError(500,'Internal Server Error in markAttendanceViaQR')  
+    throw new ApiError(500, error.message || 'Internal Server Error in markAttendanceViaQR')  
 }
 });
 
